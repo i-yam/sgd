@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downhill in the Dark</title>
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #141420;
+            color: #e8e8f0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* === Language toggle === */
+        .lang-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: #2a2a44;
+            border: 1px solid #4a4a70;
+            border-radius: 20px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: sans-serif;
+            color: #a0a0d0;
+            z-index: 100;
+            transition: background 0.2s;
+        }
+        .lang-toggle:hover { background: #363658; }
+
+        /* === Hero === */
+        .hero {
+            text-align: center;
+            padding: 80px 24px 50px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .tag {
+            background: #1c1c2e;
+            color: #8888b0;
+            border: 1px solid #2a2a40;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-family: sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+
+        .hero .subtitle {
+            color: #888;
+            font-size: 16px;
+            font-style: italic;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* === Sections === */
+        section { padding: 50px 0; }
+
+        h2 {
+            font-size: 30px;
+            color: #fff;
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #ccc;
+            margin: 24px 0 10px;
+        }
+
+        p { margin-bottom: 20px; color: #ccc; }
+
+        /* === Figure === */
+        .figure {
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .figure img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid #2a2a40;
+        }
+
+        .caption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            font-style: italic;
+            font-family: sans-serif;
+        }
+
+        /* === Formula === */
+        .formula-block {
+            margin: 24px auto;
+            text-align: center;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        /* === Highlight === */
+        .highlight {
+            background: #1c1c2e;
+            border-left: 3px solid #5050a0;
+            padding: 20px 24px;
+            margin: 28px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight p { margin-bottom: 0; color: #b0b0d0; }
+
+        /* === Quiz === */
+        .quiz {
+            background: #1c1c2e;
+            border: 1px solid #2a2a40;
+            border-radius: 10px;
+            padding: 28px;
+            margin: 36px 0;
+        }
+
+        .quiz-question {
+            font-size: 18px;
+            color: #e0e0f0;
+            margin-bottom: 18px;
+            font-style: italic;
+        }
+
+        .quiz-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-btn {
+            background: #2a2a44;
+            color: #e0e0f0;
+            border: 1px solid #3a3a55;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            flex: 1;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .quiz-btn:hover { background: #363658; border-color: #5a5a80; }
+
+        .quiz-btn.correct {
+            background: #1a4a2a;
+            border-color: #50b878;
+            color: #70e898;
+        }
+
+        .quiz-btn.wrong {
+            background: #2a2248;
+            border-color: #8264dc;
+            color: #a88ef0;
+        }
+
+        .quiz-btn.disabled { pointer-events: none; opacity: 0.6; }
+
+        .quiz-feedback {
+            margin-top: 14px;
+            font-size: 16px;
+            min-height: 24px;
+            line-height: 1.5;
+        }
+
+        .quiz-feedback.success { color: #70e898; }
+        .quiz-feedback.fail    { color: #a88ef0; }
+
+        /* === Deep dive === */
+        details {
+            background: #1c1c2e;
+            border: 1px solid #2a2a40;
+            border-radius: 8px;
+            padding: 16px 22px;
+            margin: 0 0 50px;
+        }
+
+        details summary {
+            cursor: pointer;
+            color: #8080c0;
+            font-size: 15px;
+            font-family: sans-serif;
+            user-select: none;
+            list-style: none;
+            padding: 4px 0;
+        }
+
+        details summary::before { content: "▸  "; }
+        details[open] summary::before { content: "▾  "; }
+        details[open] summary { margin-bottom: 18px; }
+
+        details p    { font-size: 16px; color: #888; margin-bottom: 12px; }
+        details h3   { font-size: 16px; color: #a0a0c0; margin: 20px 0 6px; font-family: sans-serif; }
+        details h3:first-of-type { margin-top: 4px; }
+
+        /* === Closing box === */
+        .closing-box {
+            background: #1c1c2e;
+            border: 1px solid #2a2a40;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .closing-box h3 {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .closing-box p {
+            font-size: 16px;
+            color: #777;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* === Divider === */
+        .section-rule {
+            border: none;
+            border-top: 1px solid #2a2a40;
+            margin: 0;
+        }
+
+        /* === Links === */
+        a { color: #80b4f0; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* === Footer === */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: #444;
+            font-size: 14px;
+        }
+
+        footer a { color: #555; text-decoration: none; }
+        footer a:hover { color: #a0a0d0; text-decoration: underline; }
+
+        /* === Responsive === */
+        @media (max-width: 680px) {
+            .hero h1 { font-size: 28px; }
+            h2 { font-size: 24px; }
+            body { font-size: 16px; }
+            .quiz-options { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="lang-toggle" onclick="toggleLang()">DE</button>
+
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<div class="hero">
+    <div class="tags">
+        <span class="tag">all</span>
+        <span class="tag">no-code</span>
+        <span class="tag">~20 min</span>
+        <span class="tag">mini-module</span>
+        <span class="tag">try-without-ai</span>
+        <span class="tag">regression</span>
+        <span class="tag">ml-fundamentals</span>
+    </div>
+    <h1 data-i18n="hero.title">Downhill in the Dark</h1>
+    <p class="subtitle" data-i18n="hero.subtitle">Gradient descent, local minima, and why controlled noise usually beats precision</p>
+</div>
+
+<div class="container">
+
+<!-- ── Opening ────────────────────────────────────────────────────────────── -->
+<section>
+
+    <p data-i18n="s0.p1">You need an apartment in Würzburg. One strategy is to collect every listing, build a complete picture of the market, calculate the optimal sequence of viewings, and then act. Another is to open the site, send three messages today, follow up tomorrow, and pick the best response you get.</p>
+
+    <div class="figure">
+        <img src="images/wg.jpg" alt="WG-Gesucht apartment listings in Würzburg">
+        <div class="caption" data-i18n="s0.caption">36 listings. The optimal one will be rented by the time you finish evaluating all of them.</div>
+    </div>
+
+    <p data-i18n="s0.p2">The first strategy is more correct. It is also slower, and the market does not wait. The apartment your calculation identified as optimal was rented while you were still optimizing. The person using the second strategy signed a lease on Tuesday.</p>
+
+    <p data-i18n="s0.p3">This is the difference in spirit between two versions of gradient descent. One computes carefully, using all available data before each step. The other acts on a small random sample, moves fast, and accepts that each step will be imprecise. In machine learning, the second version almost always wins.</p>
+
+</section>
+
+<hr class="section-rule">
+
+<!-- ── Part 1: The terrain ────────────────────────────────────────────────── -->
+<section>
+    <h2 data-i18n="s1.title">The Terrain</h2>
+
+    <p data-i18n="s1.p1">Training a model is a search problem. You are looking for the values of its parameters that produce the lowest possible prediction error. Visualize that error as a landscape. The horizontal axes are parameter values. The height at any point is the loss: how wrong the model currently is. Your goal is to reach the lowest point in that landscape.</p>
+
+    <p data-i18n="s1.p2">Gradient descent navigates this terrain by feel. At each step, it checks the slope at the current position — which direction goes downhill fastest? — and takes one step that way. The update rule:</p>
+
+    <div class="formula-block">$$w \;\leftarrow\; w \;-\; \alpha \cdot \frac{\partial L}{\partial w}$$</div>
+
+    <p data-i18n="s1.p3">α is the learning rate: the size of each step. The gradient ∂L/∂w gives the local slope. Move against it and you move downhill. Repeat until the loss stops decreasing. If you have seen the linear regression module, you have already seen this loop.</p>
+
+    <!-- Quiz 1 -->
+    <div class="quiz" id="quiz1">
+        <div class="quiz-question" data-i18n="quiz1.q">In gradient descent, what does the gradient tell you?</div>
+        <div class="quiz-options">
+            <button class="quiz-btn" onclick="answerQuiz('quiz1', this, true)" data-i18n="quiz1.a1">The direction of steepest ascent — so you move against it</button>
+            <button class="quiz-btn" onclick="answerQuiz('quiz1', this, false)" data-i18n="quiz1.a2">The exact location of the minimum</button>
+        </div>
+        <div class="quiz-feedback" id="quiz1-feedback"></div>
+    </div>
+</section>
+
+<hr class="section-rule">
+
+<!-- ── Part 2: Local minima ───────────────────────────────────────────────── -->
+<section>
+    <h2 data-i18n="s2.title">The Nearest Valley Is Not the Deepest One</h2>
+
+    <p data-i18n="s2.p1">The loss landscape of a real model is not a single smooth bowl. It is closer to a mountain range: multiple valleys, ridges, and plateaus where the slope is nearly zero. A ball rolled carefully downhill will find the nearest valley and stop. It has no reason to leave.</p>
+
+    <p data-i18n="s2.p2">This is a local minimum. A point where every direction looks uphill, but a better solution exists somewhere else on the landscape. Batch gradient descent, which computes an exact gradient on all training data before each step, is vulnerable to this. It follows the slope precisely and gets stuck.</p>
+
+    <p data-i18n="s2.p3">On simple problems like linear regression the loss surface is a single smooth bowl with one minimum and this does not matter. On the kind of landscapes that arise when training neural networks, with millions of parameters and complex interactions, local minima are everywhere and precision alone does not save you.</p>
+
+    <!-- Quiz 2 -->
+    <div class="quiz" id="quiz2">
+        <div class="quiz-question" data-i18n="quiz2.q">Batch gradient descent computes the exact gradient using all training data. What is the main risk?</div>
+        <div class="quiz-options">
+            <button class="quiz-btn" onclick="answerQuiz('quiz2', this, true)" data-i18n="quiz2.a1">Getting trapped in a local minimum</button>
+            <button class="quiz-btn" onclick="answerQuiz('quiz2', this, false)" data-i18n="quiz2.a2">Computing an inaccurate gradient</button>
+        </div>
+        <div class="quiz-feedback" id="quiz2-feedback"></div>
+    </div>
+</section>
+
+<hr class="section-rule">
+
+<!-- ── Part 3: SGD ────────────────────────────────────────────────────────── -->
+<section>
+    <h2 data-i18n="s3.title">The Sloppy Version</h2>
+
+    <p data-i18n="s3.p1">Stochastic gradient descent changes one thing: instead of computing the gradient on all the data, it picks a random sample and computes the gradient on that. The result is a noisy estimate of the true gradient. The step you take is not exactly downhill. It is roughly downhill, with some randomness in it.</p>
+
+    <p data-i18n="s3.p2">The practical version used in most real systems is mini-batch SGD: a small random subset of the data, typically 32 to 512 examples. The dataset is shuffled before each pass through it, so the sequence of mini-batches is different every time. The gradient estimates are imprecise. The path through the landscape is jittery.</p>
+
+    <div class="highlight">
+        <p data-i18n="s3.highlight">That jitter is the point. A ball that wobbles occasionally gets nudged out of shallow valleys. It overshoots small local minima. It keeps moving rather than settling. On a landscape with many imperfect valleys, a slightly noisy path finds better solutions than a perfectly smooth one.</p>
+    </div>
+
+    <p data-i18n="s3.p3">There is a second benefit. Because each step is computed on a different random sample, the model is constantly exposed to different parts of the data. It cannot memorize one particular pattern and call it done. The noise acts as a form of regularization — the model becomes harder to overfit.</p>
+
+    <p data-i18n="s3.p4">This is the part that surprises most people. You would expect precision to lead to better results. In optimization over complex landscapes, it often does not. The sloppiness is not a compromise forced by limited computing power. It is a design choice, kept deliberately after people noticed it works better.</p>
+
+    <!-- Quiz 3 -->
+    <div class="quiz" id="quiz3">
+        <div class="quiz-question" data-i18n="quiz3.q">SGD uses a random sample to estimate the gradient, making each step imprecise. What does this imprecision do?</div>
+        <div class="quiz-options">
+            <button class="quiz-btn" onclick="answerQuiz('quiz3', this, true)" data-i18n="quiz3.a1">It helps escape local minima and reduces overfitting</button>
+            <button class="quiz-btn" onclick="answerQuiz('quiz3', this, false)" data-i18n="quiz3.a2">It makes the final model less accurate</button>
+        </div>
+        <div class="quiz-feedback" id="quiz3-feedback"></div>
+    </div>
+</section>
+
+<hr class="section-rule">
+
+<!-- ── Part 4: Why it matters ─────────────────────────────────────────────── -->
+<section>
+    <h2 data-i18n="s4.title">Every Major AI System Was Trained This Way</h2>
+
+    <p data-i18n="s4.p1">Language models. Image generators. Recommendation engines. Fraud detection systems. Every one of these was trained with some version of stochastic gradient descent. Not because the teams could not afford to compute the exact gradient, but because they knew the noisy version produces better results.</p>
+
+    <p data-i18n="s4.p2">The step from "minimize error on training data" to "build something that works on new data" is not automatic. Precision on the training set is not the same as usefulness in the world. The noise in SGD is one of the main mechanisms that bridges that gap.</p>
+
+    <p data-i18n="s4.p3">Batch gradient descent finds the deepest valley in the training landscape. Stochastic gradient descent finds a valley that holds up across many slightly different samples of the world. The second is almost always what you want.</p>
+</section>
+
+<hr class="section-rule">
+
+<!-- ── Deep dive ──────────────────────────────────────────────────────────── -->
+<section>
+<details>
+    <summary data-i18n="dd.summary">For the curious: momentum, adaptive rates, and why the landscape is stranger than you think</summary>
+
+    <h3 data-i18n="dd.h1">Momentum</h3>
+    <p data-i18n="dd.p1">Plain SGD moves based only on the current gradient. Momentum adds memory: the update step carries some velocity from the previous step, like a ball that keeps rolling in roughly the same direction even when the slope changes slightly. This smooths the path and helps cross small uphill bumps without getting stopped by them.</p>
+
+    <h3 data-i18n="dd.h2">The Adam Optimizer</h3>
+    <p data-i18n="dd.p2">Adam combines momentum with adaptive learning rates: each parameter gets its own step size, adjusted based on how much that parameter has been changing. Parameters updated frequently get smaller steps. Parameters that have barely moved get larger ones. Adam is the default optimizer for most modern deep learning. When a paper says "we trained with Adam," this is what it means.</p>
+
+    <h3 data-i18n="dd.h3">Learning Rate Schedules</h3>
+    <p data-i18n="dd.p3">A fixed learning rate is always a compromise. Start too large and you overshoot. End too large and you never settle. Schedules begin with a larger rate to explore the landscape quickly, then decay it over time so the model can converge precisely toward the end of training. Warmup, cosine decay, step decay: different schedules for different problems, the same logic underneath all of them.</p>
+
+    <h3 data-i18n="dd.h4">The Landscape Is Stranger Than You Think</h3>
+    <p data-i18n="dd.p4">In very high-dimensional spaces, local minima are less common than intuition suggests. More common are saddle points: locations where the surface curves downward in some dimensions and upward in others. Gradient descent can stall at saddle points because the gradient is nearly zero there. SGD's noise tends to escape them naturally, which is another reason the noisy version outperforms the exact one on large models.</p>
+</details>
+</section>
+
+<!-- ── Closing ─────────────────────────────────────────────────────────────── -->
+<div class="closing-box">
+    <h3 data-i18n="closing.title">A model you use every day got its parameters from this process.</h3>
+    <p data-i18n="closing.text">Pick any AI product you interact with regularly. Behind its outputs is a loss landscape, a learning rate someone chose, and millions of noisy gradient steps. If the model surprises you, or fails you, the landscape is often where the explanation lives.</p>
+</div>
+
+</div>
+
+<footer>
+    <a href="https://github.com/i-yam/sgd" target="_blank">github.com/i-yam/sgd</a>
+    &nbsp;·&nbsp;
+    <a href="https://i-yam.github.io/overfit-and-chill" target="_blank">overfit &amp; chill</a>
+    <br>&copy; All rights reserved
+</footer>
+
+<!-- ── Scripts ─────────────────────────────────────────────────────────────── -->
+<script>
+
+// ─── Language data ────────────────────────────────────────────────────────────
+const T = {
+    en: {
+        'hero.title':    'Downhill in the Dark',
+        'hero.subtitle': 'Gradient descent, local minima, and why controlled noise usually beats precision',
+
+        's0.p1':    'You need an apartment in Würzburg. One strategy is to collect every listing, build a complete picture of the market, calculate the optimal sequence of viewings, and then act. Another is to open the site, send three messages today, follow up tomorrow, and pick the best response you get.',
+        's0.caption':'36 listings. The optimal one will be rented by the time you finish evaluating all of them.',
+        's0.p2':    'The first strategy is more correct. It is also slower, and the market does not wait. The apartment your calculation identified as optimal was rented while you were still optimizing. The person using the second strategy signed a lease on Tuesday.',
+        's0.p3':    'This is the difference in spirit between two versions of gradient descent. One computes carefully, using all available data before each step. The other acts on a small random sample, moves fast, and accepts that each step will be imprecise. In machine learning, the second version almost always wins.',
+
+        's1.title': 'The Terrain',
+        's1.p1':    'Training a model is a search problem. You are looking for the values of its parameters that produce the lowest possible prediction error. Visualize that error as a landscape. The horizontal axes are parameter values. The height at any point is the loss: how wrong the model currently is. Your goal is to reach the lowest point in that landscape.',
+        's1.p2':    'Gradient descent navigates this terrain by feel. At each step, it checks the slope at the current position — which direction goes downhill fastest? — and takes one step that way. The update rule:',
+        's1.p3':    'α is the learning rate: the size of each step. The gradient ∂L/∂w gives the local slope. Move against it and you move downhill. Repeat until the loss stops decreasing. If you have seen the linear regression module, you have already seen this loop.',
+
+        'quiz1.q':  'In gradient descent, what does the gradient tell you?',
+        'quiz1.a1': 'The direction of steepest ascent — so you move against it',
+        'quiz1.a2': 'The exact location of the minimum',
+        'quiz1.ok': 'Correct. The gradient points uphill. You move against it to go downhill. The minimum is not directly revealed — you find it by taking many small steps and recalculating each time.',
+        'quiz1.no': 'Not quite. The gradient gives you the local slope at your current position, not the destination. You use it to take one step downhill, then recalculate.',
+
+        's2.title': 'The Nearest Valley Is Not the Deepest One',
+        's2.p1':    'The loss landscape of a real model is not a single smooth bowl. It is closer to a mountain range: multiple valleys, ridges, and plateaus where the slope is nearly zero. A ball rolled carefully downhill will find the nearest valley and stop. It has no reason to leave.',
+        's2.p2':    'This is a local minimum. A point where every direction looks uphill, but a better solution exists somewhere else on the landscape. Batch gradient descent, which computes an exact gradient on all training data before each step, is vulnerable to this. It follows the slope precisely and gets stuck.',
+        's2.p3':    'On simple problems like linear regression the loss surface is a single smooth bowl with one minimum and this does not matter. On the kind of landscapes that arise when training neural networks, with millions of parameters and complex interactions, local minima are everywhere and precision alone does not save you.',
+
+        'quiz2.q':  'Batch gradient descent computes the exact gradient using all training data. What is the main risk?',
+        'quiz2.a1': 'Getting trapped in a local minimum',
+        'quiz2.a2': 'Computing an inaccurate gradient',
+        'quiz2.ok': 'Correct. Precision guarantees you follow the slope exactly. It does not guarantee the slope leads somewhere good. On complex landscapes, the nearest valley is often not the best one.',
+        'quiz2.no': 'Not quite. The batch gradient is computed on all the data, so by definition it is accurate. The problem is not the calculation — it is where the calculation leads you.',
+
+        's3.title':     'The Sloppy Version',
+        's3.p1':        'Stochastic gradient descent changes one thing: instead of computing the gradient on all the data, it picks a random sample and computes the gradient on that. The result is a noisy estimate of the true gradient. The step you take is not exactly downhill. It is roughly downhill, with some randomness in it.',
+        's3.p2':        'The practical version used in most real systems is mini-batch SGD: a small random subset of the data, typically 32 to 512 examples. The dataset is shuffled before each pass through it, so the sequence of mini-batches is different every time. The gradient estimates are imprecise. The path through the landscape is jittery.',
+        's3.highlight': 'That jitter is the point. A ball that wobbles occasionally gets nudged out of shallow valleys. It overshoots small local minima. It keeps moving rather than settling. On a landscape with many imperfect valleys, a slightly noisy path finds better solutions than a perfectly smooth one.',
+        's3.p3':        'There is a second benefit. Because each step is computed on a different random sample, the model is constantly exposed to different parts of the data. It cannot memorize one particular pattern and call it done. The noise acts as a form of regularization — the model becomes harder to overfit.',
+        's3.p4':        'This is the part that surprises most people. You would expect precision to lead to better results. In optimization over complex landscapes, it often does not. The sloppiness is not a compromise forced by limited computing power. It is a design choice, kept deliberately after people noticed it works better.',
+
+        'quiz3.q':  'SGD uses a random sample to estimate the gradient, making each step imprecise. What does this imprecision do?',
+        'quiz3.a1': 'It helps escape local minima and reduces overfitting',
+        'quiz3.a2': 'It makes the final model less accurate',
+        'quiz3.ok': 'Correct. The imprecision is not a flaw. The noise keeps the optimization moving, prevents settling in bad valleys, and acts as regularization against overfitting.',
+        'quiz3.no': 'Not quite. On training data, SGD may be less precise. On new data — which is what actually matters — it is often better, because the noise prevents the model from memorizing the training set.',
+
+        's4.title': 'Every Major AI System Was Trained This Way',
+        's4.p1':    'Language models. Image generators. Recommendation engines. Fraud detection systems. Every one of these was trained with some version of stochastic gradient descent. Not because the teams could not afford to compute the exact gradient, but because they knew the noisy version produces better results.',
+        's4.p2':    'The step from "minimize error on training data" to "build something that works on new data" is not automatic. Precision on the training set is not the same as usefulness in the world. The noise in SGD is one of the main mechanisms that bridges that gap.',
+        's4.p3':    'Batch gradient descent finds the deepest valley in the training landscape. Stochastic gradient descent finds a valley that holds up across many slightly different samples of the world. The second is almost always what you want.',
+
+        'dd.summary': 'For the curious: momentum, adaptive rates, and why the landscape is stranger than you think',
+        'dd.h1': 'Momentum',
+        'dd.p1': 'Plain SGD moves based only on the current gradient. Momentum adds memory: the update step carries some velocity from the previous step, like a ball that keeps rolling in roughly the same direction even when the slope changes slightly. This smooths the path and helps cross small uphill bumps without getting stopped by them.',
+        'dd.h2': 'The Adam Optimizer',
+        'dd.p2': 'Adam combines momentum with adaptive learning rates: each parameter gets its own step size, adjusted based on how much that parameter has been changing. Parameters updated frequently get smaller steps. Parameters that have barely moved get larger ones. Adam is the default optimizer for most modern deep learning. When a paper says "we trained with Adam," this is what it means.',
+        'dd.h3': 'Learning Rate Schedules',
+        'dd.p3': 'A fixed learning rate is always a compromise. Start too large and you overshoot. End too large and you never settle. Schedules begin with a larger rate to explore the landscape quickly, then decay it over time so the model can converge precisely toward the end of training. Warmup, cosine decay, step decay: different schedules for different problems, the same logic underneath all of them.',
+        'dd.h4': 'The Landscape Is Stranger Than You Think',
+        'dd.p4': 'In very high-dimensional spaces, local minima are less common than intuition suggests. More common are saddle points: locations where the surface curves downward in some dimensions and upward in others. Gradient descent can stall at saddle points because the gradient is nearly zero there. SGD\'s noise tends to escape them naturally, which is another reason the noisy version outperforms the exact one on large models.',
+
+        'closing.title': 'A model you use every day got its parameters from this process.',
+        'closing.text':  'Pick any AI product you interact with regularly. Behind its outputs is a loss landscape, a learning rate someone chose, and millions of noisy gradient steps. If the model surprises you, or fails you, the landscape is often where the explanation lives.',
+    },
+
+    de: {
+        'hero.title':    'Im Dunkeln bergab',
+        'hero.subtitle': 'Gradientenabstieg, lokale Minima und warum kontrolliertes Rauschen Präzision meist schlägt',
+
+        's0.p1':    'Du brauchst eine Wohnung in Würzburg. Eine Möglichkeit: alle Anzeigen sammeln, ein vollständiges Bild des Markts erstellen, die optimale Besichtigungsreihenfolge berechnen und dann handeln. Die andere: die Seite öffnen, heute drei Nachrichten schicken, morgen nachfragen und das beste Angebot nehmen.',
+        's0.caption':'36 Anzeigen. Die optimale ist vermietet, bevor du alle bewertet hast.',
+        's0.p2':    'Die erste Strategie ist korrekter. Sie ist auch langsamer, und der Markt wartet nicht. Die Wohnung, die deine Berechnung als optimal eingestuft hat, war bereits vermietet, während du noch optimiert hast. Die Person mit der zweiten Strategie hat letzten Dienstag den Mietvertrag unterschrieben.',
+        's0.p3':    'Das ist der Unterschied im Geist zwischen zwei Varianten des Gradientenabstiegs. Eine berechnet sorgfältig und nutzt alle verfügbaren Daten vor jedem Schritt. Die andere handelt auf Basis einer kleinen Zufallsstichprobe, bewegt sich schnell und akzeptiert, dass jeder Schritt ungenau sein wird. Im maschinellen Lernen gewinnt fast immer die zweite Variante.',
+
+        's1.title': 'Das Gelände',
+        's1.p1':    'Ein Modell zu trainieren ist ein Suchproblem. Du suchst nach den Parameterwerten, die den Vorhersagefehler minimieren. Stell dir diesen Fehler als Landschaft vor. Die horizontalen Achsen sind Parameterwerte. Die Höhe an jedem Punkt ist der Verlust: wie sehr das Modell gerade daneben liegt. Dein Ziel ist der tiefste Punkt dieser Landschaft.',
+        's1.p2':    'Gradientenabstieg navigiert dieses Gelände nach Gefühl. Bei jedem Schritt prüft er die Steigung an der aktuellen Position — welche Richtung geht am steilsten bergab? — und macht einen Schritt dorthin. Die Update-Regel:',
+        's1.p3':    'α ist die Lernrate: die Schrittgröße. Der Gradient ∂L/∂w gibt die lokale Steigung an. Bewegt man sich gegen ihn, geht man bergab. Wiederholen, bis der Verlust aufhört zu sinken. Wer das Modul zur linearen Regression kennt, hat diese Schleife bereits gesehen.',
+
+        'quiz1.q':  'Was sagt dir der Gradient beim Gradientenabstieg?',
+        'quiz1.a1': 'Die Richtung des steilsten Anstiegs — du bewegst dich dagegen',
+        'quiz1.a2': 'Die genaue Position des Minimums',
+        'quiz1.ok': 'Richtig. Der Gradient zeigt bergauf. Du bewegst dich dagegen, um bergab zu gehen. Das Minimum wird nicht direkt angezeigt — du findest es durch viele kleine Schritte und ständiges Neuberechnen.',
+        'quiz1.no': 'Nicht ganz. Der Gradient gibt die lokale Steigung an deiner aktuellen Position an, nicht das Ziel. Du nutzt ihn für einen Schritt bergab und berechnest dann neu.',
+
+        's2.title': 'Das nächste Tal ist nicht das tiefste',
+        's2.p1':    'Die Verlustlandschaft eines echten Modells ist keine glatte Schale. Sie ähnelt eher einem Gebirge: mehrere Täler, Grate und Plateaus, auf denen die Steigung fast null ist. Eine Kugel, die sorgfältig bergab rollt, findet das nächste Tal und bleibt dort. Sie hat keinen Grund, es zu verlassen.',
+        's2.p2':    'Das ist ein lokales Minimum. Ein Punkt, von dem aus jede Richtung bergauf aussieht, obwohl es irgendwo auf der Landschaft eine bessere Lösung gibt. Batch-Gradientenabstieg, der vor jedem Schritt den exakten Gradienten auf allen Trainingsdaten berechnet, ist dafür anfällig. Er folgt der Steigung präzise und steckt fest.',
+        's2.p3':    'Bei einfachen Problemen wie der linearen Regression ist die Verlustfläche eine einzige glatte Schale mit einem Minimum und das spielt keine Rolle. Bei den Landschaften, die beim Training neuronaler Netze mit Millionen von Parametern entstehen, sind lokale Minima überall und Präzision allein rettet einen nicht.',
+
+        'quiz2.q':  'Batch-Gradientenabstieg berechnet den exakten Gradienten auf allen Trainingsdaten. Was ist das Hauptrisiko?',
+        'quiz2.a1': 'In einem lokalen Minimum steckenzubleiben',
+        'quiz2.a2': 'Einen ungenauen Gradienten zu berechnen',
+        'quiz2.ok': 'Richtig. Präzision garantiert, dass du der Steigung exakt folgst. Sie garantiert nicht, dass die Steigung irgendwo Gutes hinführt. Auf komplexen Landschaften ist das nächste Tal oft nicht das beste.',
+        'quiz2.no': 'Nicht ganz. Der Batch-Gradient wird auf allen Daten berechnet und ist damit per Definition genau. Das Problem ist nicht die Berechnung — es ist, wohin sie führt.',
+
+        's3.title':     'Die ungenaue Variante',
+        's3.p1':        'Stochastischer Gradientenabstieg ändert eine Sache: Statt den Gradienten auf allen Daten zu berechnen, wählt er eine zufällige Stichprobe aus und berechnet den Gradienten darauf. Das Ergebnis ist eine verrauschte Schätzung des wahren Gradienten. Der gemachte Schritt ist nicht exakt bergab. Er ist ungefähr bergab, mit etwas Zufälligkeit.',
+        's3.p2':        'Die praktische Version, die in den meisten Systemen zum Einsatz kommt, ist Mini-Batch-SGD: eine kleine zufällige Teilmenge der Daten, typischerweise 32 bis 512 Beispiele. Der Datensatz wird vor jedem Durchlauf gemischt, sodass die Reihenfolge der Mini-Batches jedes Mal anders ist. Die Gradienten-Schätzungen sind ungenau. Der Weg durch die Landschaft ist holprig.',
+        's3.highlight': 'Genau dieser holprige Weg ist der Punkt. Eine Kugel, die gelegentlich wackelt, wird aus flachen Tälern herausgestoßen. Sie überschießt kleine lokale Minima. Sie bleibt in Bewegung, statt sich niederzulassen. Auf einer Landschaft mit vielen unvollkommenen Tälern findet ein leicht verrauschter Weg bessere Lösungen als ein perfekt glatter.',
+        's3.p3':        'Es gibt einen zweiten Vorteil. Da jeder Schritt auf einer anderen zufälligen Stichprobe berechnet wird, wird das Modell ständig verschiedenen Teilen der Daten ausgesetzt. Es kann kein bestimmtes Muster auswendig lernen und dabei bleiben. Das Rauschen wirkt als Regularisierung — das Modell wird schwerer zu überfitten.',
+        's3.p4':        'Das ist der Teil, der die meisten überrascht. Man würde erwarten, dass Präzision zu besseren Ergebnissen führt. Bei der Optimierung über komplexe Landschaften tut sie das oft nicht. Die Ungenauigkeit ist kein durch begrenzte Rechenleistung erzwungener Kompromiss. Es ist eine Designentscheidung, die bewusst beibehalten wurde, nachdem man bemerkt hatte, dass sie besser funktioniert.',
+
+        'quiz3.q':  'SGD schätzt den Gradienten anhand einer Zufallsstichprobe, was jeden Schritt ungenau macht. Was bewirkt diese Ungenauigkeit?',
+        'quiz3.a1': 'Sie hilft, lokale Minima zu entkommen, und reduziert Overfitting',
+        'quiz3.a2': 'Sie macht das endgültige Modell weniger genau',
+        'quiz3.ok': 'Richtig. Die Ungenauigkeit ist kein Fehler. Das Rauschen hält die Optimierung in Bewegung, verhindert das Festsetzen in schlechten Tälern und wirkt als Regularisierung gegen Overfitting.',
+        'quiz3.no': 'Nicht ganz. Auf Trainingsdaten ist SGD möglicherweise weniger präzise. Auf neuen Daten — worauf es ankommt — ist es oft besser, weil das Rauschen verhindert, dass das Modell den Trainingsdatensatz auswendig lernt.',
+
+        's4.title': 'Jedes große KI-System wurde so trainiert',
+        's4.p1':    'Sprachmodelle. Bildgeneratoren. Empfehlungssysteme. Betrugserkennung. Jedes davon wurde mit einer Variante des stochastischen Gradientenabstiegs trainiert. Nicht weil die Teams es sich nicht leisten konnten, den exakten Gradienten zu berechnen, sondern weil sie wussten, dass die verrauschte Variante bessere Ergebnisse liefert.',
+        's4.p2':    'Der Schritt von "Fehler auf Trainingsdaten minimieren" zu "etwas bauen, das auf neuen Daten funktioniert" ist nicht selbstverständlich. Präzision auf dem Trainingsdatensatz ist nicht dasselbe wie Nützlichkeit in der Welt. Das Rauschen in SGD ist einer der Hauptmechanismen, der diese Lücke überbrückt.',
+        's4.p3':    'Batch-Gradientenabstieg findet das tiefste Tal in der Trainingslandschaft. Stochastischer Gradientenabstieg findet ein Tal, das auf vielen leicht unterschiedlichen Stichproben aus der Welt standhält. Das zweite ist fast immer das, was man haben möchte.',
+
+        'dd.summary': 'Für Neugierige: Momentum, adaptive Lernraten und warum die Landschaft seltsamer ist als gedacht',
+        'dd.h1': 'Momentum',
+        'dd.p1': 'Normaler SGD bewegt sich nur auf Basis des aktuellen Gradienten. Momentum fügt Gedächtnis hinzu: der Update-Schritt trägt etwas Geschwindigkeit vom vorherigen Schritt, wie eine Kugel, die in ungefähr dieselbe Richtung weiterrollt, auch wenn sich die Steigung leicht ändert. Das glättet den Weg und hilft, kleine Anstiege zu überwinden, ohne dort steckenzubleiben.',
+        'dd.h2': 'Der Adam-Optimierer',
+        'dd.p2': 'Adam kombiniert Momentum mit adaptiven Lernraten: jeder Parameter bekommt seine eigene Schrittgröße, angepasst daran, wie stark er sich verändert hat. Häufig aktualisierte Parameter bekommen kleinere Schritte. Kaum veränderte Parameter bekommen größere. Adam ist der Standard-Optimierer für modernes Deep Learning. Wenn ein Paper sagt "wir haben mit Adam trainiert", ist das damit gemeint.',
+        'dd.h3': 'Lernraten-Schedules',
+        'dd.p3': 'Eine feste Lernrate ist immer ein Kompromiss. Zu groß am Anfang und du überschießt. Zu groß am Ende und du findest dich nie. Schedules beginnen mit einer größeren Rate, um die Landschaft schnell zu erkunden, und verringern sie dann, damit das Modell am Ende des Trainings präzise konvergieren kann. Warmup, Cosine Decay, Step Decay: verschiedene Schedules für verschiedene Probleme, dieselbe Logik darunter.',
+        'dd.h4': 'Die Landschaft ist seltsamer als gedacht',
+        'dd.p4': 'In sehr hochdimensionalen Räumen sind lokale Minima seltener als die Intuition vermuten lässt. Häufiger sind Sattelpunkte: Orte, an denen die Fläche in einigen Dimensionen bergab und in anderen bergauf verläuft. Gradientenabstieg kann an Sattelpunkten ins Stocken geraten, weil der Gradient dort fast null ist. Das Rauschen von SGD entkommt ihnen auf natürliche Weise — ein weiterer Grund, warum die verrauschte Variante auf großen Modellen besser abschneidet.',
+
+        'closing.title': 'Ein Modell, das du jeden Tag nutzt, hat seine Parameter durch diesen Prozess bekommen.',
+        'closing.text':  'Nimm ein beliebiges KI-Produkt, mit dem du regelmäßig interagierst. Hinter seinen Ausgaben steckt eine Verlustlandschaft, eine Lernrate, die jemand gewählt hat, und Millionen verrauschter Gradientenschritte. Wenn das Modell dich überrascht oder im Stich lässt, liegt die Erklärung oft in der Landschaft.',
+    }
+};
+
+let currentLang = 'en';
+
+function toggleLang() {
+    currentLang = currentLang === 'en' ? 'de' : 'en';
+    document.documentElement.lang = currentLang;
+    document.querySelector('.lang-toggle').textContent = currentLang === 'en' ? 'DE' : 'EN';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (T[currentLang] && T[currentLang][key]) el.innerHTML = T[currentLang][key];
+    });
+}
+
+// ─── Quiz ─────────────────────────────────────────────────────────────────────
+function answerQuiz(quizId, btn, isCorrect) {
+    const quiz     = document.getElementById(quizId);
+    const feedback = document.getElementById(quizId + '-feedback');
+    quiz.querySelectorAll('.quiz-btn').forEach(b => b.classList.add('disabled'));
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    feedback.className = 'quiz-feedback ' + (isCorrect ? 'success' : 'fail');
+    const key = quizId + (isCorrect ? '.ok' : '.no');
+    feedback.innerHTML = (T[currentLang] && T[currentLang][key]) ? T[currentLang][key] : T.en[key];
+}
+
+// ─── KaTeX ────────────────────────────────────────────────────────────────────
+window.addEventListener('load', function () {
+    if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: '$$', right: '$$', display: true  },
+                { left: '\\(', right: '\\)', display: false }
+            ],
+            throwOnError: false
+        });
+    }
+});
+
+</script>
+</body>
+</html>
